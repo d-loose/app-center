@@ -12,10 +12,38 @@
 #define APPLICATION_FLAGS G_APPLICATION_NON_UNIQUE
 #endif
 
+#define SHADOW_SIZE 52
+
 struct _MyApplication {
   GtkApplication parent_instance;
   char** dart_entrypoint_arguments;
 };
+
+static void set_window_size(GtkWindow* window) {
+  GdkWindow* win =
+      gdk_screen_get_root_window(gtk_window_get_screen(GTK_WINDOW(window)));
+  GdkMonitor* monitor = gdk_display_get_monitor_at_window(
+      gtk_widget_get_display(GTK_WIDGET(window)), win);
+  GdkRectangle monitor_size;
+  int width, height;
+
+  gdk_monitor_get_geometry(monitor, &monitor_size);
+
+  printf("W: %u x H:%u\n", monitor_size.width, monitor_size.height);
+
+  if (monitor_size.width > 1800) {
+    width = 1280;
+    height = 800;
+  } else {
+    width = 800;
+    height = 600;
+  }
+
+  printf("%d, %d", width, height);
+
+  gtk_window_set_default_size(window, width + SHADOW_SIZE,
+                              height + SHADOW_SIZE);
+}
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
@@ -39,7 +67,7 @@ static void my_application_activate(GApplication* application) {
   geometry.min_height = 600;
   gtk_window_set_geometry_hints(window, nullptr, &geometry, GDK_HINT_MIN_SIZE);
 
-  gtk_window_set_default_size(window, 860, 860);
+  set_window_size(GTK_WINDOW(window));
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
