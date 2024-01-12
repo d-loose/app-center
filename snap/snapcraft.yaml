@@ -36,7 +36,9 @@ parts:
     plugin: nil
     override-build: |
       set -eux
+      dart pub cache clean -f
       dart pub global activate melos
+      tree -hsD $HOME/.pub-cache/hosted/pub.dev/ansi*
       # when building locally artifacts can pollute the container and cause builds to fail
       # this helps increase reliability for local builds
       dart pub global run melos clean
@@ -45,6 +47,8 @@ parts:
       flutter build linux --release -v
       mkdir -p $CRAFT_PART_INSTALL/bin/
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
+    build-packages:
+      - tree
 
 apps:
   snap-store:
