@@ -37,7 +37,7 @@ parts:
     override-build: |
       set -eux
       dart pub cache clean -f
-      dart pub global activate melos
+      dart pub global activate melos ^3.0.0
       tree -hsD $HOME/.pub-cache/hosted/pub.dev/ansi*
       # when building locally artifacts can pollute the container and cause builds to fail
       # this helps increase reliability for local builds
